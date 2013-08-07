@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<style type="text/css">
+#preview_size_fake{ /* 该对象只用来在IE下获得图片的原始尺寸，无其它用途 */  
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=image);    
+    visibility:hidden;
+}
+.preview_fake{ /* 该对象用于在IE下显示预览图片 */  
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale);  
+}
+</style>
+<title>本地图片预览代码（支持 IE6、IE7）</title>
+
+<script src="http://code.jquery.com/jquery-1.8.2.js"></script>
+<script src="base64.js"></script>
+<script type="text/javascript">
+function readFileIE(fileBrowser)
+{ 
+    var data; 
+    try{ 
+        var fso = new ActiveXObject("Scripting.FileSystemObject");
+        fileBrowser.select();
+		var source=document.selection.createRange().text;
+        var fileName=fso.GetAbsolutePathName(source); 
+        if(!fso.FileExists(fileName)){ 
+            alert("File '" + fileName + "' not found."); 
+            return; 
+        } 
+        var file = fso.OpenTextFile(fileName, 1); 
+        data = file.ReadAll();
+        
+        alert("Data from file: " + data); 
+        file.Close(); 
+    }catch(e){ 
+        if(e.number == -2146827859){ 
+            // This is what we get if the browser's security settings forbid 
+            // the use of the FileSystemObject ActiveX control                                                   Internet选项                安全                  自定义级别                                                                    初始化和脚本控件标记为不安全
+            alert('Unable to access local files due to browser security settings. To overcome this, go to Tools->Internet Options->Security->Custom Level. Find the setting for "Initialize and script ActiveX controls not marked as safe" and change it to "Enable" or "Prompt"'); 
+        }else if (e.number == -2146828218) { 
+            // This is what we get if the browser can't access the file 
+            // because of file permissions 
+            alert("Unable to access local file '" + fileName + "' because of file permissions. Make sure the file and/or parent directories are readable."); 
+        }else throw e; 
+    } 
+}
+
+function clacImgZoomParam( maxWidth, maxHeight, width, height ){  
+    var param = { width:width, height:height, top:0, left:0 };  
+      
+    if( width>maxWidth || height>maxHeight ){  
+        rateWidth = width / maxWidth;  
+        rateHeight = height / maxHeight;  
+          
+        if( rateWidth > rateHeight ){  
+            param.width =  maxWidth;  
+            param.height = height / rateWidth;  
+        }else{  
+            param.width = width / rateHeight;  
+            param.height = maxHeight;  
+        }  
+    }  
+      
+    param.left = (maxWidth - param.width) / 2;  
+    param.top = (maxHeight - param.height) / 2;  
+      
+    return param;  
+} 
+
+function autoSizePreview( objPre, originalWidth, originalHeight, maxwidth, maxheight){  
+    var zoomParam = clacImgZoomParam( maxwidth, maxheight, originalWidth, originalHeight );  
+    objPre.style.width = zoomParam.width + 'px';  
+    objPre.style.height = zoomParam.height + 'px';  
+    //objPre.style.marginTop = zoomParam.top + 'px';  
+    //objPre.style.marginLeft = zoomParam.left + 'px';  
+}  
+
+	function ShowImage(obj) 
+	{ 
+	var allowSuffix=".jpg|.gif|.bmp|.png";//.jpg,.bmp,.gif,.png
+	var suffix=obj.value.substring(obj.value.lastIndexOf(".")+1).toLowerCase();
+	
+	var browserVersion= window.navigator.userAgent.toUpperCase();
+	
+	if(allowSuffix.indexOf(suffix)>-1){
+		if(browserVersion.indexOf("MSIE 7.0")>-1 || browserVersion.indexOf("MSIE 8.0")>-1 || browserVersion.indexOf("MSIE 9.0")>-1)
+			{//ie7、ie8 
+		obj.select();
+		var source=document.selection.createRange().text;
+		obj.blur();
+		//var newPreview = document.getElementById("divNewPreview");
+		var newPreview=document.createElement("img");
+		//newPreview.setAttribute("class", "preview_fake");
+		var style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='scale')";
+		
+		newPreview.setAttribute("style", style);
+		//newPreview.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = source;
+		info.innerHTML=style;
+		orginal.src=source;
+		newPreview.filters.item('DXImageTransform.Microsoft.AlphaImageLoader').src=source;
+		var objPreviewSizeFake = document.getElementById( 'preview_size_fake' );
+		objPreviewSizeFake.filters.item('DXImageTransform.Microsoft.AlphaImageLoader').src = source;
+		alert(objPreviewSizeFake.offsetWidth);
+		alert(objPreviewSizeFake.offsetHeight);
+		autoSizePreview( newPreview,  objPreviewSizeFake.offsetWidth, objPreviewSizeFake.offsetHeight );
+		//newPreview.style.width = 160; 
+		//newPreview.style.height = 170;
+		
+ 
+		//newPreview.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").sizingMethod = 'scale';
+		document.getElementById("newPreview").appendChild(newPreview);
+		//$("#divPreview").attr("style","display:none");
+		//$("#divNewPreview").attr("style","filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=image);width:160px;height:170px;border:solid 1px #d2e2e2;");
+  		//document.getElementById("sourceview").style.height=170;
+  		//$("#sourceview").prop("style","height:170px;");
+  		//$("#sourceview").prop("src",newPreview.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src);
+  		//$("#sourceview").prop("style","height:170px;");
+		}
+	
+	}
+	}
+function ShowImagettt(obj) { 
+   
+   var browserVersion= window.navigator.userAgent.toUpperCase();
+      
+      
+          if(browserVersion.indexOf("MSIE 7.0")>-1 || 
+			  browserVersion.indexOf("MSIE 8.0")>-1 || browserVersion.indexOf("MSIE 9.0")>-1){
+        	
+        	obj.select();
+      		//
+      		//var newPreview = document.getElementById("divPreview");
+      		
+      		
+      		var source=document.selection.createRange().text;
+      		alert(source);
+      		alert(obj.value);
+      		obj.blur();
+      		newPreview.filters.item('DXImageTransform.Microsoft.AlphaImageLoader').src = source;
+      		//newPreview.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = source; 
+      		newPreview.style.width = 160; 
+      		newPreview.style.height = 170; 
+      		newPreview.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").sizingMethod = 'scale';
+
+      		newPreview.prop("style","filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=image);width:160px;height:170px;border:solid 1px #d2e2e2;");  
+      	}
+      	else if(browserVersion.indexOf("Firefox")>-1){ //火狐
+      		var objectURL = window.URL.createObjectURL(obj.files[0]);
+      		$("#imgHeadPhoto").attr("src", window.URL.createObjectURL(obj.files[0]));
+      	}  
+      	else if(obj.files){ 
+      //兼容chrome，也可以兼容火狐，Chrome、Firefox上通过HTML5来实现
+      	var reader = new FileReader();  
+      	reader.onload = function(evt){$("#imgHeadPhoto").attr("src",evt.target.result);}  
+      	reader.readAsDataURL(obj.files[0]);  
+      	}  
+
+}
+     </script>
+</head>
+
+<body>
+
+	<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAI
+AAAFSDNYfAAAAaklEQVR42u3XQQrAIAwAQeP%2F%2F6wf8CJBJTK9lnQ7FpHGaOurt1
+I34nfH9pMMZAZ8BwMGEvvh%2BBsJCAgICLwIOA8EBAQEBAQEBAQEBK79H5RfIQAAAAA
+AAAAAAAAAAAAAAAAAAAAAAID%2FABMSqAfj%2FsLmvAAAAABJRU5ErkJggg%3D%3D">
+		this is for ie test other brrower my doesn't work</p>
+
+		<br />
+	<div id="divPreview"></div>
+
+
+
+	<br /><p>
+	<img id="preview_size_fake"/><p>
+	THis is ourginal way picture present: but could not get over 100k picture. </p>
+	<img id="orginal"></img> 
+	</p>
+	<div id="info"></div>
+	<img style="filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=image, src='file:///F:/(C79) [大理石] 肉奴隷 岩瀬愛子 (バクマン。)/003.jpg');"/>
+	<img id="divNewPreview"
+		style="filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale );  border: solid 1px #d2e2e2;">
+	</img>
+	<img id="sourceview" alt="" src="" style="height: 170px;">
+	<p> this is picture show test:</p>
+	<div id="newPreview"></div>
+
+		<hr />
+
+		<p>
+			input picture： <input type="file" onchange="ShowImage(this)" />
+		</p>
+</body>
+
+</html>
