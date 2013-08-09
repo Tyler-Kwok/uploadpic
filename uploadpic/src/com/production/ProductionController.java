@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.production.bean.ProductTestBean;
 
@@ -34,18 +35,23 @@ public class ProductionController {
 	private Logger logger = LoggerFactory.getLogger(ProductionController.class);
 
 	@RequestMapping(value = "/fancybox-modal-popup", method = RequestMethod.GET)
-	// @ModelAttribute("product") ProductBean productBean,
-	// @ModelAttribute ProductBean pb
-	public String getImages(HttpServletRequest request, Model model) {
+	public ModelAndView getImages(HttpServletRequest request) {
 
-		return "fancybox-modal-popup";
+		ModelAndView model = new ModelAndView("fancybox-modal-popup");
+		model
+		    .addObject(
+		        "jsonData",
+		        "[{\"name\":\"add1\",\"id\":\"adId1\"},{\"name\":\"add2\",\"id\":\"adId2\"},{\"name\":\"add3\",\"id\":\"adId3\"},{\"name\":\"add4\",\"id\":\"adId4\"}]");
+
+		return model;
 	}
 
 	@RequestMapping(value = "/submitMessage", method = RequestMethod.POST)
-	public @ResponseBody String submitMessage(@RequestParam String message, @RequestParam String email) throws Exception {
+	public @ResponseBody
+	String submitMessage(@RequestParam String message, @RequestParam String email) throws Exception {
 		System.out.println(message);
 		System.out.println(email);
-		if(message != null && !"".equals(message) && email != null && !"".equals(email)){
+		if (message != null && !"".equals(message) && email != null && !"".equals(email)) {
 			return "{\"success\":true, \"msg\":\"submit success!\"}";
 		} else {
 			return "{\"success\":false, \"msg\":\"submit fail!\"}";
@@ -63,8 +69,7 @@ public class ProductionController {
 	 */
 	@RequestMapping(value = "/modal-popup-contact-us/{productId}", method = RequestMethod.POST)
 	public @ResponseBody
-	Integer popupContactUs(@PathVariable("productId") String productId, HttpServletRequest request, Locale locale,
-			Model model) {
+	Integer popupContactUs(@PathVariable("productId") String productId, HttpServletRequest request, Locale locale, Model model) {
 		logger.debug(" =======popupContactUs========productId: " + productId);
 		return Integer.parseInt(productId);
 
