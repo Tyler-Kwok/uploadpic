@@ -1,25 +1,33 @@
 var SearchResult = {
 	display : function(jsonData) {
 		Ext.onReady(function() {
-			var popupWindow = function(adId) {
-				console.log('win popup id: ' + adId);
+			var popupWindow = function(data) {
+				console.log('win popup id: ' + data);
 				var window = Ext.create('Ext.window.Window', {
-				    hight : 200,
-				    width : 200,
+				    hight : 400,
+				    width : 400,
 				    title : 'Contact Us',
 				    modal : true,
 				    items : [ {
 				        xtype : 'form',
 				        url : 'submitMessage',
+				        width : '100%',
 				        items : [ {
 				            xtype : 'container',
 				            name : 'messageContainer',
 				            hidden : true
 				        }, {
-				            xtype : 'textarea',
-				            hidden : true,
-				            name : 'adId',
-				            value : adId
+				            xtype : 'displayfield',
+				            fieldLabel : 'Ad Name',
+				            value : data.name
+				        }, {
+				            xtype : 'displayfield',
+				            fieldLabel : 'Email',
+				            value : data.email
+				        }, {
+				            xtype : 'displayfield',
+				            fieldLabel : 'Phone',
+				            value : data.phone
 				        }, {
 				            name : 'message',
 				            xtype : 'textarea',
@@ -45,12 +53,12 @@ var SearchResult = {
 						                messageContainer.add({
 						                    xtype : 'container',
 						                    border : 0,
-						                    html : '<div><ul>' + action.result.msg + '</ul></div>'
+						                    html : '<div><b>' + action.result.msg + '</b></div>'
 						                });
 						                messageContainer.show();
 						                setTimeout(function() {
 							                messageContainer.hide();
-						                }, 1000);
+						                }, 2000);
 					                },
 					                fail : function(form, action) {
 						                var messageContainer = Ext.ComponentQuery.query('*[name="messageContainer"]')[0];
@@ -58,12 +66,12 @@ var SearchResult = {
 						                messageContainer.add({
 						                    xtype : 'container',
 						                    border : 0,
-						                    html : '<div><ul>' + action.result.msg + '</ul></div>'
+						                    html : '<div><b>' + action.result.msg + '/<b></div>'
 						                });
 						                messageContainer.show();
 						                setTimeout(function() {
 							                messageContainer.hide();
-						                }, 1000);
+						                }, 2000);
 					                },
 					            });
 				            }
@@ -75,6 +83,7 @@ var SearchResult = {
 
 			var panel = Ext.create('Ext.panel.Panel', {
 			    renderTo : Ext.getBody(),
+			    width : '100%',
 			    title : 'Search Result',
 			    layout : {
 				    type : 'vbox'
@@ -86,28 +95,42 @@ var SearchResult = {
 				    layout : {
 					    type : 'hbox'
 				    },
+				    width : '100%',
 				    height : 150,
 				    items : [ {
 				        width : '20%',
 				        height : '100%',
 				        xtpye : 'container',
-				        html : 'box20%',
-				        border : false,
+				        border : true,
 				        items : [ {
-				            xtype : 'button',
-				            text : 'Contact Us',
-				            adId : jsonData[i].id,
-				            handler : function(t) {
-					            console.log(t.adId);
-					            popupWindow(t.adId);
-				            }
+				            xtype : 'container',
+				            layout : {
+				                type : 'vbox',
+				                align : 'center'
+				            },
+				            items : [ {
+				                xtype : 'displayfield',
+				                value : jsonData[i].name,
+				                margins : '5 5 5 5'
+				            }, {
+				                xtype : 'button',
+				                text : 'Reply',
+				                adId : jsonData[i].id,
+				                data : jsonData[i],
+				                margins : '5 5 5 5',
+				                handler : function(t) {
+					                console.log(t.data);
+					                popupWindow(t.data);
+				                }
+				            } ]
 				        } ]
 				    }, {
+				        align : 'center',
 				        width : '80%',
 				        height : '100%',
 				        xtpye : 'container',
-				        html : 'box80%',
-				        border : false
+				        html : jsonData[i].content,
+				        border : true
 				    } ]
 				}));
 			}

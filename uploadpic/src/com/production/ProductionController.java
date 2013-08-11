@@ -38,10 +38,12 @@ public class ProductionController {
 	public ModelAndView getImages(HttpServletRequest request) {
 
 		ModelAndView model = new ModelAndView("fancybox-modal-popup");
-		model
-		    .addObject(
-		        "jsonData",
-		        "[{\"name\":\"add1\",\"id\":\"adId1\"},{\"name\":\"add2\",\"id\":\"adId2\"},{\"name\":\"add3\",\"id\":\"adId3\"},{\"name\":\"add4\",\"id\":\"adId4\"}]");
+		model.addObject(
+				"jsonData",
+				 "[{\"id\":\"adId1\",\"name\":\"Ad Name1\",\"phone\":\"Ad phone 1\",\"email\":\"email 1\",\"content\":\"ad content: please click reply for contact detail.\"},"
+				+ "{\"id\":\"adId3\",\"name\":\"Ad Name3\",\"phone\":\"Ad phone 3\",\"email\":\"email 3\",\"content\":\"ad content: please click reply for contact detail.\"},"
+				+ "{\"id\":\"adId4\",\"name\":\"Ad Name4\",\"phone\":\"Ad phone 4\",\"email\":\"email 4\",\"content\":\"ad content: please click reply for contact detail.\"},"
+				+ "{\"id\":\"adId4\",\"name\":\"Ad Name4\",\"phone\":\"Ad phone 4\",\"email\":\"email 4\",\"content\":\"ad content: please click reply for contact detail.\"}]");
 
 		return model;
 	}
@@ -69,7 +71,8 @@ public class ProductionController {
 	 */
 	@RequestMapping(value = "/modal-popup-contact-us/{productId}", method = RequestMethod.POST)
 	public @ResponseBody
-	Integer popupContactUs(@PathVariable("productId") String productId, HttpServletRequest request, Locale locale, Model model) {
+	Integer popupContactUs(@PathVariable("productId") String productId, HttpServletRequest request, Locale locale,
+			Model model) {
 		logger.debug(" =======popupContactUs========productId: " + productId);
 		return Integer.parseInt(productId);
 
